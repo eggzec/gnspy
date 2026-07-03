@@ -1,0 +1,86 @@
+# Tooling configuration for the hand-written GNS Animator4 type stubs.
+#
+# These are PEP 484 stub files (`.pyi`) for the compiled `gnspy` and `gnsgui`
+# extension modules. They intentionally carry rich NumPy-style docstrings so the
+# same files can drive both static type checking / IDE autocomplete AND API
+# documentation generation via griffe + mkdocstrings.
+#
+# Run the full gate with:
+#   uv run ruff    check   .
+#   uv run ruff    format --check .
+#   uv run mypy    --strict gnspy.pyi gnsgui.pyi
+#   uv run ty      check   .
+#   uv run pyrefly check   .
+#   uv run griffe  dump    gnspy gnsgui --search .   # docstring parse check
+
+[project]
+name = "gnspy"
+version = "0.0.0"
+description = "PEP 484 type stubs for the GNS Animator4 gnspy/gnsgui Python API."
+requires-python = ">=3.10"
+dependencies = []
+
+# --------------------------------------------------------------------------- #
+# Ruff — strict ("ALL") with a small, deliberately documented ignore list.    #
+# --------------------------------------------------------------------------- #
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+# Lint the .pyi files (ruff excludes stubs from some rules automatically, but we
+# opt them fully in so ALL applies).
+extend-include = ["*.pyi"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # -- Intentional: these stubs are documentation-bearing ------------------ #
+    "PYI021", # docstring-in-stub: we deliberately embed NumPy docstrings for griffe/mkdocstrings.
+    "D418",   # docstring-on-overload: overloaded methods carry distinct per-overload NumPy
+              #   docstrings (same documentation-bearing-stub rationale as PYI021); griffe renders them.
+    # -- The stub must mirror the real (non-PEP8) compiled API surface ------- #
+    #    Renaming any of these would break real user calls, so we cannot fix
+    #    them; they describe an external C++/pybind11 API we do not control.
+    "N802",   # function-name-should-be-lowercase: real API is camelCase (getElementList).
+    "N803",   # argument-name-should-be-lowercase: real kwargs are camelCase.
+    "N815",   # mixed-case-variable-in-class-scope: enum members are PascalCase (Element.Bar).
+    "N816",   # mixed-case-variable-in-global-scope: module-level constant aliases.
+    "A002",   # builtin-argument-shadowing: real kwargs are named id/type/filter/format.
+    "A003",   # builtin-attribute-shadowing.
+    "FBT001", # boolean-typed-positional-argument: real API exposes bool params (indirect=...).
+    "FBT002", # boolean-default-positional-argument.
+    # -- Formatter compatibility (recommended by ruff) ----------------------- #
+    "COM812", # missing-trailing-comma: conflicts with the formatter.
+    "ISC001", # single-line-implicit-string-concatenation: conflicts with the formatter.
+    # NumPy docstring D-rule conflicts are resolved by `convention = "numpy"` below.
+]
+
+[tool.ruff.lint.pydocstyle]
+# Enforce NumPy docstring convention on every documented symbol.
+convention = "numpy"
+
+[tool.ruff.lint.flake8-annotations]
+# Stubs never annotate self/cls; do not demand it.
+mypy-init-return = true
+
+# --------------------------------------------------------------------------- #
+# mypy — strict. Type-checks the stubs internally (no runtime import needed).  #
+# --------------------------------------------------------------------------- #
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+disallow_any_generics = true
+# The compiled modules are not importable in this env; we check the stubs as files.
+ignore_missing_imports = true
+
+[dependency-groups]
+dev = [
+    "griffe>=2.1.0",
+    "mypy>=2.1.0",
+    "pyrefly>=1.1.1",
+    "ruff>=0.15.20",
+    "ty>=0.0.56",
+    "zensical>=0.0.46",
+]
