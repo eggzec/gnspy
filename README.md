@@ -1,3 +1,5 @@
+![gnspy](docs/assets/gnspy-banner.png)
+
 # gnspy — complete help for GNS Animator4
 
 This repo is the complete documentation site and PyPI package for scripting
