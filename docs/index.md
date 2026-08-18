@@ -2,7 +2,9 @@
 icon: lucide/rocket
 ---
 
-# Get started
+![gnspy](assets/gnspy-banner.png)
+
+# gnspy
 
 For full documentation visit [zensical.org](https://zensical.org/docs/).
 
