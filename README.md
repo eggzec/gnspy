@@ -1,4 +1,4 @@
-![gnspy](docs/assets/gnspy-banner.png)
+![gnspy](https://raw.githubusercontent.com/eggzec/gnspy/main/docs/assets/gnspy-banner.png)
 
 # gnspy — complete help for GNS Animator4
 
